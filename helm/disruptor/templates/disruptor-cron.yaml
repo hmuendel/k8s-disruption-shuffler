@@ -1,0 +1,44 @@
+apiVersion:  batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "disruptor.fullname" . }}-disruptor
+  namespace: {{ .Values.namespace }}
+  labels:
+{{ include "disruptor.labels" . | indent 4 }}
+spec:
+  schedule: {{ .Values.schedule.disruption | quote }}
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "disruptor.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ include "disruptor.fullname" . }}
+          restartPolicy: OnFailure
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "disruptor.fullname" . }}-config
+                items:
+                 - key: disruptor
+                   path: config.yaml
+            - name: state
+              configMap:
+                name: {{ include "disruptor.fullname" . }}-state
+          containers:
+            - name: {{ .Chart.Name }}
+              env:
+               - name: STATE_CM_NAME
+                 value: {{ include "disruptor.fullname" . }}-state 
+               - name: STATE_CM_NAMESPACE
+                 value: {{ .Values.namespace }}
+              volumeMounts:
+               - name: config
+                 mountPath: /config.yaml
+                 subPath: config.yaml
+               - name: state
+                 mountPath: /state
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}

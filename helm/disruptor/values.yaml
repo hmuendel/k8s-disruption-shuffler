@@ -1,0 +1,45 @@
+# Default values for disruptor.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+namespace: kube-system
+
+image:
+  # repository: demonize/rust-disruptor
+  repository: demonize/python-disruptor
+  # repository: demonize/go-disruptor
+  tag: latest
+  pullPolicy: Always
+
+config:
+    reconstructor: |
+      mode: reconstruction
+    disruptor: |
+      mode: disruption
+      labelSelector:
+         chart: concourse-8.2.4
+              
+schedule:
+  # dirupt at 10pm 
+    disruption: "0,30 * * * *"
+  # reconstruct at 5am
+    reconstruction: "15,45 * * * *"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+resources: 
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

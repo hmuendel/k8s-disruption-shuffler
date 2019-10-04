@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "disruptor.fullname" . }}
+  labels:
+{{ include "disruptor.labels" . | indent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "disruptor.fullname" . }}
+  namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole #this must be Role or ClusterRole
+  name: {{ include "disruptor.fullname" . }}
