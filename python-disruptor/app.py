@@ -129,11 +129,7 @@ def reconstruction(state_name, state_namespace):
 
 config.load_incluster_config()
 CFG = read_config('/config.yaml')
-#TODO delete below vvvvvvvv
 print(CFG)
-CFG['labelSelector'] = {'release': 'devtools'}
-print(CFG)
-# TODO delete above ^^^^^^^
 if CFG['mode'] == 'disruption':
     disruption(
         STATE_CONFIG_NAME,
